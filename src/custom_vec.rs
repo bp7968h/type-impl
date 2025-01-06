@@ -1,7 +1,7 @@
 use std::ptr::NonNull;
 use std::{alloc, mem};
 
-struct CustomVec<T: Sized> {
+pub struct CustomVec<T: Sized> {
     ptr: Option<NonNull<T>>,
     len: usize,
     capacity: usize,
