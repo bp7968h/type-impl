@@ -88,3 +88,19 @@ impl<T: Sized> CustomVec<T> {
         self.len
     }
 }
+
+impl<T: Sized> Drop for CustomVec<T> {
+    fn drop(&mut self) {
+        if let Some(mut ptr) = self.ptr {
+            let len = self.len();
+            let size = mem::size_of::<T>() * self.capacity();
+            let align = mem::align_of::<T>();
+
+            unsafe {
+                let layout = alloc::Layout::from_size_align_unchecked(size, align);
+                std::ptr::drop_in_place(std::slice::from_raw_parts_mut(&mut ptr as *mut _, len));
+                alloc::dealloc(ptr.as_ptr() as *mut u8, layout);
+            }
+        }
+    }
+}
